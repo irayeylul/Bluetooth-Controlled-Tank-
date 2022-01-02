@@ -1,0 +1,87 @@
+/*
+IEEE Project 2021-2022
+Project Name: Bluetooth Controlled Support Robot
+Name-Surname: İray Eylül Ural
+Number: 151220202102
+ */
+ 
+//L298n motor driver pin connection
+const int motorA1  = 6;
+const int motorA2  = 11;
+const int motorB1  = 10;
+const int motorB2  = 5;
+
+int state; //variable of the signal coming from the bluetooth device.
+int vSpeed = 255; //standard speed
+
+void setup() {
+  //determine the pins.
+  pinMode(motorA1, OUTPUT);
+  pinMode(motorA2, OUTPUT);
+  pinMode(motorB1, OUTPUT);
+  pinMode(motorB2, OUTPUT);
+  Serial.begin(9600);
+}
+
+void loop() {
+  if (Serial.available() > 0) {
+    state = Serial.read(); //Save incoming data in the variable 'state'.
+  }
+
+  /*There are 4 speed levels that can be set from the application. 
+   These values should be between 0-255.*/
+  if (state == '0') {
+    vSpeed = 0;
+  }
+  else if (state == '1') {
+    vSpeed = 100;
+  }
+  else if (state == '2') {
+    vSpeed = 180;
+  }
+  else if (state == '3') {
+    vSpeed = 200;
+  }
+  else if (state == '4') {
+    vSpeed = 255;
+  }
+
+  
+  if (state == 'F') { //If the incoming data is 'F', the tank moves forward.
+    analogWrite(motorA1, vSpeed); analogWrite(motorA2, 0);
+    analogWrite(motorB1, vSpeed);      analogWrite(motorB2, 0);
+  }
+  else if (state == 'G') { //If the incoming data is 'G', the tank moves forward and to the left.
+    analogWrite(motorA1, vSpeed ); analogWrite(motorA2, 0);
+    analogWrite(motorB1, 100);    analogWrite(motorB2, 0);
+  }
+  else if (state == 'I') { //If the incoming data is 'I', the tank moves forward and to the right.
+    analogWrite(motorA1, 100); analogWrite(motorA2, 0);
+    analogWrite(motorB1, vSpeed);      analogWrite(motorB2, 0);
+  }
+  else if (state == 'B') { //If the incoming data is 'B', the tank moves back.
+    analogWrite(motorA1, 0);   analogWrite(motorA2, vSpeed);
+    analogWrite(motorB1, 0);   analogWrite(motorB2, vSpeed);
+  }
+  else if (state == 'H') { //If the incoming data is 'H', the tank moves back and to the left.
+    analogWrite(motorA1, 0);   analogWrite(motorA2, 100);
+    analogWrite(motorB1, 0); analogWrite(motorB2, vSpeed);
+  }
+  else if (state == 'J') { //If the incoming data is 'J', the tank moves back and to the right.
+    analogWrite(motorA1, 0);   analogWrite(motorA2, vSpeed);
+    analogWrite(motorB1, 0);   analogWrite(motorB2, 100);
+  }
+  else if (state == 'L') { //If the incoming data is 'L', the tank moves to the left.
+    analogWrite(motorA1, vSpeed);   analogWrite(motorA2, 150);
+    analogWrite(motorB1, 0); analogWrite(motorB2, 0);
+  }
+  else if (state == 'R') { //If the incoming data is 'R', the tank moves to the right.
+    analogWrite(motorA1, 0);   analogWrite(motorA2, 0);
+    analogWrite(motorB1, vSpeed);   analogWrite(motorB2, 150);
+  }
+  else if (state == 'S') { //If the incoming data is 'S', stop the tank.
+    analogWrite(motorA1, 0);  analogWrite(motorA2, 0);
+    analogWrite(motorB1, 0);  analogWrite(motorB2, 0);
+  }
+
+}
